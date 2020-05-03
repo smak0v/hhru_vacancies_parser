@@ -1,0 +1,45 @@
+version: '3.4'
+
+services:
+  worker:
+    container_name: worker
+    restart: on-failure
+    image: &img worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - beat
+    volumes:
+      - ./data/:/app/data/
+    environment: &env
+      REDIS_PASSWORD: secret_password
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: redis://:secret_password@redis:6379/
+    command: [celery, -A, hhru_parser, worker, --loglevel=info]
+
+  beat:
+    container_name: beat
+    restart: on-failure
+    image: *img
+    depends_on:
+      - redis
+    volumes:
+      - ./data/:/app/data/
+    environment: *env
+    command: [celery, -A, hhru_parser, beat, --loglevel=info]
+
+  redis:
+    container_name: redis
+    restart: on-failure
+    image: bitnami/redis
+    ports:
+      - 6380:6379
+    volumes:
+      - redis_data:/data/redis/
+    environment: *env
+
+volumes:
+  redis_data:

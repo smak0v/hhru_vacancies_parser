@@ -1,0 +1,10 @@
+docker-compose.yml
+.dockerignore
+
+celerybeat-schedule
+celerybeat.pid
+
+.git
+.gitignore
+
+data

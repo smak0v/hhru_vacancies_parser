@@ -1,0 +1,8 @@
+celerybeat-schedule
+celerybeat.pid
+
+venv
+
+.idea
+
+data
